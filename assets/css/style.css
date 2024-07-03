@@ -21,6 +21,46 @@ body {
     /* background-image: url("/07\ -\ Exercicio/assets/img/bg/ceu-garoa.jpg"); */
 }
 
+
+.home{
+    width: 40rem; height: 10rem;
+}
+ 
+form{
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    gap: 1rem;
+}
+
+.home input{
+    width: 30rem; height: 3rem;
+    padding: 0 1rem;
+    background-color: var(--primary-color);
+    border: none; border-bottom: solid var(--primary-color-darker) 0.3rem;
+    color: white;
+}
+
+.home input::placeholder{
+   color: rgba(255, 255, 255, 0.24);
+   text-align: center;
+   font-weight: bolder;
+}
+
+
+.home button{
+    max-width: 30rem;
+    background-color: var(--primary-color); color: white;
+    border-radius: 1rem;
+    padding: 0.5rem 2rem;
+    font-weight: bolder;
+}
+
+.home button:hover{
+    background-color: white; color: var(--primary-color);
+    cursor: pointer;
+}
+
+
 .skeleton{
     background-color: var(--primary-color);
     position: fixed;

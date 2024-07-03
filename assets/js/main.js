@@ -1,3 +1,41 @@
+async function loadPage(){
+    console.log('INICIO');
+    try{
+        const res = await fetch('clima.html');
+
+        if(res.status !== 200){
+            throw new Error('404 page not found');
+        };
+        const html = await res.text();
+
+        loadResult(html)
+    }catch(e){
+        console.log(e);
+    };
+};
+
+function loadResult(res){
+    const result = document.querySelector('body');
+    result.innerHTML = res;
+}
+
+const form = document.querySelector(".form");
+
+form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const input = document.querySelector('#cidade');
+
+    if(!input.value){
+        alert('Digite o nome de uma cidade');
+        return
+    }
+    console.log(input.value);
+    await loadPage();
+    await start(input.value)
+})
+
+
 class WeatherForecast{
     constructor(nome){
         this.nome = nome;
@@ -7,100 +45,24 @@ class WeatherForecast{
     };
 
     async getForecast(){
-        const request = await fetch(`http://18.228.192.215:3333/get`);
+        const request = await fetch(`http://54.233.6.105:3333/clima/${this.nome}`);
     
         const clima = await request.json();
     
-        // console.log(clima);
         this.previsao = clima;
     };
-
-    // weatherCodeVerify(id){
-
-    //     const weatherCode = {
-    //         0 : {
-    //             text:'Céu limpo', 
-    //             icon:'assets/img/icones/wi-day-sunny.svg', 
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         1 : {
-    //             text:'Parcialmente limpo', 
-    //             icon:'assets/img/icones/wi-day-cloudy.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         2 : {
-    //             text:'Parcialmente nublado', 
-    //             icon:'assets/img/icones/wi-day-cloudy-high.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         3 : {
-    //             text:'Nublado', 
-    //             icon:'assets/img/icones/wi-cloudy.svg'},
-    //             bg:'assets/img/bg/ceu-limpo.jpg',
-    //         45 : {
-    //             text:'Névoa', 
-    //             icon:'assets/img/icones/wi-fog.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         51 : {
-    //             text:'Garoa Leve', 
-    //             icon:'assets/img/icones/wi-raindrop.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         53 : {
-    //             text:'Garoa Moderada',  
-    //             icon:'assets/img/icones/wi-raindrops.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         55 : {
-    //             text:'Garoa Intensa', 
-    //             icon:'assets/img/icones/wi-rain.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         63: {
-    //             text:'Garoa Intensa', 
-    //             icon:'assets/img/icones/wi-rain.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         80 : {
-    //             text:'Leves pancadas de chuva', 
-    //             icon:'assets/img/icones/wi-showers.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         81 : {
-    //             text:'Pancadas de chuva', 
-    //             icon:'assets/img/icones/wi-rain-wind.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         82 : {
-    //             text:'Pancadas de chuva intensa', 
-    //             icon:'assets/img/icones/wi-night-thunderstorm.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         95 : {
-    //             text:'Pancadas de chuva intensa', 
-    //             icon:'assets/img/icones/wi-night-thunderstorm.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         96 : {
-    //             text:'Pancadas de chuva intensa', 
-    //             icon:'assets/img/icones/wi-night-thunderstorm.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-    //         99 : {
-    //             text:'Pancadas de chuva intensa', 
-    //             icon:'assets/img/icones/wi-night-thunderstorm.svg',
-    //             bg:'assets/img/bg/ceu-limpo.jpg'},
-                
-        
-                
-    //     };
-
-    //     if( weatherCode[id] === 'undefined') console.log('Invalid code');
-        
-    //     return weatherCode[id];
-    // };
 };
 
-const cidade = new WeatherForecast('Guarulhos')
-
-async function start(){
+async function start(local){
+    const cidade = new WeatherForecast(`${local}`);
+    
     await cidade.getForecast();
-    hideSkeleton();
-    printCurrentForecast();
-    printWeekForecast();
+    printCurrentForecast(cidade);
+    printWeekForecast(cidade);
+    hideSkeleton(true);
 };
-start()
 
-
-function printCurrentForecast(){
+function printCurrentForecast(cidade){
 
     console.log(cidade.previsao.semana);
 
@@ -113,7 +75,7 @@ function printCurrentForecast(){
     };
 
     const currentWeatherForecast = cidade.previsao.hoje;
-    // console.log(currentWeatherForecast);
+    console.log(currentWeatherForecast);
 
     elements.title.innerHTML += currentWeatherForecast.cidade;
     elements.currentTitle.innerHTML = currentWeatherForecast.dia.slice(0, -7);
@@ -129,7 +91,7 @@ function printCurrentForecast(){
     // }
 };
 
-function printWeekForecast(){
+function printWeekForecast(cidade){
 
     cidade.previsao.semana.forEach((previsao, index) => {
         if(!index) return;
@@ -152,7 +114,9 @@ function printWeekForecast(){
     });
 }
 
-function hideSkeleton(){
+function hideSkeleton(boleano){
     const skeleton = document.querySelector('.skeleton');
-    skeleton.style.display = 'none'
+
+    if(boleano) return skeleton.style.display = 'none';
+    return skeleton.style.display = ''
 }
